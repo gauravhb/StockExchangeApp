@@ -18,6 +18,9 @@ public class StockTradeServiceImpl implements StockTradeService {
 
     }
 
+    /* This method is used to record Trade done on the given stock at given price.
+     * Trade object is validated for mandatory attributes else exception is thrown.
+     * */
     @Override
     public Trade recordTrade(Trade trade) {
         //Validate Trade object
@@ -35,11 +38,16 @@ public class StockTradeServiceImpl implements StockTradeService {
         return stockTradeDAO.saveTrade(trade);
     }
 
+    /* This method returns all the trade done for this given stock. Trades returned are
+     * sorted based on time of the trade from latest to earliest.
+     * */
     @Override
     public Set<Trade> getTrades(String symbol) {
         return stockTradeDAO.getTrades(symbol);
     }
 
+    /* This method returns last traded price of the given stock.
+     * */
     @Override
     public BigDecimal getLatestPrice(String symbol) {
         return stockTradeDAO.getLatestPrice(symbol);

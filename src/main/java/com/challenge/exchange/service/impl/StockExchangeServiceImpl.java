@@ -26,6 +26,9 @@ public class StockExchangeServiceImpl implements StockExchangeService {
         this.stockTradeService = stockTradeService;
     }
 
+    /* This method calculates dividend yield of given stock, based on the given price.
+    * Method requires that given stock is listed on exchange already.
+    * */
     @Override
     public BigDecimal getDividendYield(String symbol, BigDecimal price) {
         if(symbol == null){
@@ -55,6 +58,9 @@ public class StockExchangeServiceImpl implements StockExchangeService {
         return dividendYield;
     }
 
+    /* This method calculates PE Ratio of given stock, based on the given price.
+     * Method requires that given stock is listed on exchange already.
+     * */
     @Override
     public Optional<BigDecimal> getPERatio(String symbol, BigDecimal price) {
         if(symbol == null){
@@ -77,6 +83,9 @@ public class StockExchangeServiceImpl implements StockExchangeService {
         return pe;
     }
 
+    /* This method calculates volume weighted stock price based on trades happened in last 15 mins on this stock.
+    * If this stock is not traded in last 15 mins, empty optional will be returned.
+    * */
     @Override
     public Optional<BigDecimal> getVolumeWeightedStockPrice(String symbol) {
         Optional<BigDecimal> price = Optional.empty();
@@ -109,6 +118,8 @@ public class StockExchangeServiceImpl implements StockExchangeService {
 
     }
 
+    /* This method calculates Index value based on latest traded price of stocks registered on exchange
+     * */
     @Override
     public long getGBCEIndex(Map<String, Stock> stocks) {
 
