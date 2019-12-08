@@ -14,8 +14,12 @@ public class StockTradeDAOImpl implements StockTradeDAO {
 
     @Override
     public Trade saveTrade(Trade trade) {
+        Objects.requireNonNull(trade,"Trade object can't be null");
+        Objects.requireNonNull(trade.getSymbol(),"Symbol object can't be null in Trade object");
+        Objects.requireNonNull(trade.getTimestamp(),"Trade timestamp can't be null in Trade object");
+
         Comparator<Trade> byTimeStamp =
-                Comparator.comparing(Trade::getTimestamp);
+                Comparator.comparing(Trade::getTimestamp).reversed();
         trade.setTradeId(tradeIDSeq.incrementAndGet());
         tradeMap.computeIfAbsent(trade.getSymbol(), k -> new TreeSet<>(byTimeStamp)).add(trade);
 

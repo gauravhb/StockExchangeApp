@@ -1,6 +1,9 @@
 package com.challenge.exchange.service;
 
+import com.challenge.exchange.model.Stock;
+
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 
 public interface StockExchangeService {
@@ -9,9 +12,9 @@ public interface StockExchangeService {
 
     Optional<BigDecimal> getPERatio(String symbol, BigDecimal price);
 
-    BigDecimal getVolumeWeightedStockPrice(String symbol);
+    Optional<BigDecimal> getVolumeWeightedStockPrice(String symbol);
 
-    int getGBCEIndex();
+    long getGBCEIndex(Map<String, Stock> stocks);
 
 
 }

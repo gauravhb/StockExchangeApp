@@ -17,14 +17,16 @@ import com.challenge.exchange.service.impl.StockTradeServiceImpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 
-public class StockMarketApp {
+public class SampleStockMarketApp {
     public static void main(String[] args) {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
 
         StockTradeDAO tradeDAO = new StockTradeDAOImpl();
-        StockTradeService tradeService = new StockTradeServiceImpl(tradeDAO);
+        StockTradeService tradeService = new StockTradeServiceImpl(tradeDAO, dataService);
 
         Stock s1 = new Stock();
         s1.setSymbol("TEA");
@@ -133,11 +135,11 @@ public class StockMarketApp {
         tradeService.recordTrade(t6);
 
 
-        System.out.println("Trades done for stock " + s1.getSymbol() +" are :" + tradeService.getTrades(s1.getSymbol()));
-        System.out.println("Trades done for stock " + s2.getSymbol() +" are :" + tradeService.getTrades(s2.getSymbol()));
-        System.out.println("Trades done for stock " + s3.getSymbol() +" are :" + tradeService.getTrades(s3.getSymbol()));
-        System.out.println("Trades done for stock " + s4.getSymbol() +" are :" + tradeService.getTrades(s4.getSymbol()));
-        System.out.println("Trades done for stock " + s5.getSymbol() +" are :" + tradeService.getTrades(s5.getSymbol()));
+        System.out.println("Details of Trade captured for stock " + s1.getSymbol() +" :" + tradeService.getTrades(s1.getSymbol()));
+        System.out.println("Details of Trade captured for stock " + s2.getSymbol() +" :" + tradeService.getTrades(s2.getSymbol()));
+        System.out.println("Details of Trade captured for stock " + s3.getSymbol() +" :" + tradeService.getTrades(s3.getSymbol()));
+        System.out.println("Details of Trade captured for stock " + s4.getSymbol() +" :" + tradeService.getTrades(s4.getSymbol()));
+        System.out.println("Details of Trade captured for stock " + s5.getSymbol() +" :" + tradeService.getTrades(s5.getSymbol()));
 
         System.out.println("Latest price for stock " + s1.getSymbol() +" is :" + tradeService.getLatestPrice(s1.getSymbol()));
         System.out.println("Latest price for stock " + s2.getSymbol() +" is :" + tradeService.getLatestPrice(s2.getSymbol()));
@@ -145,15 +147,19 @@ public class StockMarketApp {
         System.out.println("Latest price for stock " + s4.getSymbol() +" is :" + tradeService.getLatestPrice(s4.getSymbol()));
         System.out.println("Latest price for stock " + s5.getSymbol() +" is :" + tradeService.getLatestPrice(s5.getSymbol()));
 
+        Optional<BigDecimal> pe  = exchangeService.getPERatio(s2.getSymbol(), new BigDecimal("120"));
+        System.out.println("PE ratio of stock : " + s2.getSymbol() + " is : " + pe.get());
+
+        Optional<BigDecimal> volumeWeightedStockPrice = exchangeService.getVolumeWeightedStockPrice(s2.getSymbol());
+        System.out.println("volumeWeightedStockPrice of stock "+ s2.getSymbol() +" is :"+ volumeWeightedStockPrice.get());
 
 
-
-        System.out.println("GBCE all share index is :" + exchangeService.getGBCEIndex());
-
+        Map<String, Stock> stocks = dataService.getAllExchangeListedStocks();
 
 
-        BigDecimal volumeWeightedStockPrice = exchangeService.getVolumeWeightedStockPrice(s2.getSymbol());
-        System.out.println("volumeWeightedStockPrice of stock "+ s2.getSymbol() +" is :"+ volumeWeightedStockPrice);
+        System.out.println("GBCE all share index is :" + exchangeService.getGBCEIndex(stocks));
+
+
 
 
 

@@ -11,7 +11,7 @@ public interface StockStaticDataService {
 
     Stock addStockStaticData(Stock stock);
 
-    boolean removeStockStaticData(String symbol);
+    Stock removeStockStaticData(String symbol);
 
     Stock findStock(String symbol);
 
