@@ -2,7 +2,7 @@
 
 This is the implementation of GBCE Stock Market Application.
 
-####Features :
+#### Features :
 1. Register any new Stock on Exchange
 2. Record Trades done on stocks which are registered on exchange
 3. Calculate GBCE Share Index value
@@ -11,7 +11,7 @@ listed stocks.
 
 --------------------------------------------------------
 
-####Package Structure :
+#### Package Structure :
 
 - *com.challenge.exchange.service.** : This package contains all the 
 Service Layer classes which does validation, implement Business logic
@@ -28,7 +28,7 @@ ENUM used by this models.
 
 --------------------------------------------------------------------
 
-####Typical Usage Flow:
+#### Typical Usage :
 
 1. Register the stocks on the exchange by providing required 
 mandatory attributes related to stocks using method provided in 
