@@ -4,16 +4,20 @@ import com.challenge.exchange.data.StaticDataDAO;
 import com.challenge.exchange.data.impl.StaticDataDAOImpl;
 import com.challenge.exchange.model.Stock;
 import com.challenge.exchange.model.StockType;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+
 
 public class StockStaticDataServiceImplTest {
 
     @Test
-    void testAddStock() {
+    public void testAddStock() {
 
         StaticDataDAO dao = new StaticDataDAOImpl();
         StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
@@ -32,32 +36,39 @@ public class StockStaticDataServiceImplTest {
 
     }
 
-    @Test
-    void testAddStockNull() {
+    @Test(expected = RuntimeException.class)
+    public void testAddStockNull() {
 
         StaticDataDAO dao = new StaticDataDAOImpl();
         StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
 
-        assertThrows(RuntimeException.class, ()-> dataService.addStockStaticData(null));
+        dataService.addStockStaticData(null);
     }
 
-    @Test
-    void testAddStockSymbolNull() {
-
+    @Test(expected = RuntimeException.class)
+    public void testAddStockSymbolNull() {
         StaticDataDAO dao = new StaticDataDAOImpl();
         StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
 
         Stock s = new Stock();
-        assertThrows(RuntimeException.class, ()-> dataService.addStockStaticData(s));
+
+        dataService.addStockStaticData(s);
     }
 
     @Test
-    void testGetAllExchangeListedStocks() {
+    public void testGetAllExchangeListedStocks() {
 
         StaticDataDAO dao = new StaticDataDAOImpl();
         StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
 
         assertEquals(0,  dataService.getAllExchangeListedStocks().size());
+    }
+
+    @After
+    public void clearStockRepo(){
+        StaticDataDAO dao = new StaticDataDAOImpl();
+        StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
+        dataService.clearAllStockStaticData();
     }
 
 }

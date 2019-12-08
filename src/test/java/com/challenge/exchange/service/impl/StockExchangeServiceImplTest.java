@@ -11,8 +11,8 @@ import com.challenge.exchange.model.TradeType;
 import com.challenge.exchange.service.StockExchangeService;
 import com.challenge.exchange.service.StockStaticDataService;
 import com.challenge.exchange.service.StockTradeService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.*;
+
 
 public class StockExchangeServiceImplTest {
 
@@ -44,13 +44,13 @@ public class StockExchangeServiceImplTest {
 
         BigDecimal dividendYieldCn = exchangeService.getDividendYield(s2.getSymbol(), BigDecimal.valueOf(200));
 
-        Assertions.assertTrue(new BigDecimal("0.04").compareTo(dividendYieldCn) == 0);
+        assertTrue(new BigDecimal("0.04").compareTo(dividendYieldCn) == 0);
 
 
     }
 
-    @Test
-    public void testGetDividendYieldNullStockNullPrice() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetDividendYieldNullStockSymbol() {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
 
@@ -59,13 +59,36 @@ public class StockExchangeServiceImplTest {
 
         StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
 
-        Assertions.assertThrows(NullPointerException.class,()-> exchangeService.getDividendYield(null, new BigDecimal("10.5")));
 
-        Assertions.assertThrows(NullPointerException.class,()-> exchangeService.getDividendYield("", new BigDecimal("10.5")));
+        exchangeService.getDividendYield(null, new BigDecimal("10.5"));
 
-        Assertions.assertThrows(NullPointerException.class,()-> exchangeService.getDividendYield("POP", null));
+    }
 
-        Assertions.assertThrows(IllegalArgumentException.class,()-> exchangeService.getDividendYield("POP", BigDecimal.ZERO));
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetDividendYieldNullPrice() {
+        StaticDataDAO stockDAO = new StaticDataDAOImpl();
+        StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
+
+        StockTradeDAO tradeDAO = new StockTradeDAOImpl();
+        StockTradeService tradeService = new StockTradeServiceImpl(tradeDAO, dataService);
+
+        StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
+
+        exchangeService.getDividendYield("POP", null);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetDividendYieldNullStockSymbolZeroPrice() {
+        StaticDataDAO stockDAO = new StaticDataDAOImpl();
+        StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
+
+        StockTradeDAO tradeDAO = new StockTradeDAOImpl();
+        StockTradeService tradeService = new StockTradeServiceImpl(tradeDAO, dataService);
+
+        StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
+
+        exchangeService.getDividendYield("POP", BigDecimal.ZERO);
 
     }
 
@@ -81,7 +104,7 @@ public class StockExchangeServiceImplTest {
 
         Optional<BigDecimal> pe = exchangeService.getPERatio("POP", new BigDecimal("100"));
 
-        Assertions.assertFalse(pe.isPresent());
+        assertFalse(pe.isPresent());
     }
 
     @Test
@@ -104,12 +127,12 @@ public class StockExchangeServiceImplTest {
 
         Optional<BigDecimal> pe = exchangeService.getPERatio("POP", new BigDecimal("100"));
 
-        Assertions.assertTrue(pe.isPresent());
-        Assertions.assertTrue(new BigDecimal(12).compareTo(pe.get()) == 0);
+        assertTrue(pe.isPresent());
+        assertTrue(new BigDecimal(12).compareTo(pe.get()) == 0);
     }
 
-    @Test
-    public void testGetPERatioNullStockNullPrice() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPERatioNullStock() {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
 
@@ -118,9 +141,21 @@ public class StockExchangeServiceImplTest {
 
         StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
 
-        Assertions.assertThrows(NullPointerException.class, ()-> exchangeService.getPERatio(null, new BigDecimal("100")));
+        exchangeService.getPERatio(null, new BigDecimal("100"));
 
-        Assertions.assertThrows(NullPointerException.class, ()-> exchangeService.getPERatio("POP", null));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPERatioNullPrice() {
+        StaticDataDAO stockDAO = new StaticDataDAOImpl();
+        StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
+
+        StockTradeDAO tradeDAO = new StockTradeDAOImpl();
+        StockTradeService tradeService = new StockTradeServiceImpl(tradeDAO, dataService);
+
+        StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
+
+        exchangeService.getPERatio("POP", null);
     }
 
     @Test
@@ -135,7 +170,7 @@ public class StockExchangeServiceImplTest {
 
         Optional<BigDecimal> price = exchangeService.getVolumeWeightedStockPrice("POP");
 
-        Assertions.assertFalse(price.isPresent());
+        assertFalse(price.isPresent());
 
     }
 
@@ -144,8 +179,17 @@ public class StockExchangeServiceImplTest {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
 
+        Stock s2 = new Stock();
+        s2.setSymbol("POP");
+        s2.setType(StockType.COMMON_STOCK);
+        s2.setLastDividend(BigDecimal.valueOf(8));
+        s2.setParValue(BigDecimal.valueOf(100));
+
+        dataService.addStockStaticData(s2);
+
         StockTradeDAO tradeDAO = new StockTradeDAOImpl();
         StockTradeService tradeService = new StockTradeServiceImpl(tradeDAO, dataService);
+
 
         StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
         Trade t2 = new Trade();
@@ -159,7 +203,7 @@ public class StockExchangeServiceImplTest {
 
         Optional<BigDecimal> price = exchangeService.getVolumeWeightedStockPrice("POP");
 
-        Assertions.assertTrue(new BigDecimal("125.5").compareTo(price.get()) == 0);
+        assertTrue(new BigDecimal("125.5").compareTo(price.get()) == 0);
 
     }
 
@@ -212,7 +256,7 @@ public class StockExchangeServiceImplTest {
 
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testGetGBCEIndexEmptyStocks() {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
@@ -222,11 +266,21 @@ public class StockExchangeServiceImplTest {
 
         StockExchangeService exchangeService = new StockExchangeServiceImpl(dataService, tradeService);
 
-        assertThrows(IllegalArgumentException.class, () -> exchangeService.getGBCEIndex(null));
+        //assertThrows(IllegalArgumentException.class, () -> exchangeService.getGBCEIndex(null));
+        exchangeService.getGBCEIndex(null);
 
         Map<String, Stock> map = new HashMap<>();
-        assertThrows(IllegalArgumentException.class, () -> exchangeService.getGBCEIndex(map));
+        //assertThrows(IllegalArgumentException.class, () -> exchangeService.getGBCEIndex(map));
+        exchangeService.getGBCEIndex(map);
 
     }
 
+    @After
+    public void clearStockRepo(){
+        StaticDataDAO dao = new StaticDataDAOImpl();
+        StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
+        dataService.clearAllStockStaticData();
     }
+
+
+}

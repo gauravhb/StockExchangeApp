@@ -4,24 +4,37 @@ import com.challenge.exchange.data.StaticDataDAO;
 import com.challenge.exchange.data.StockTradeDAO;
 import com.challenge.exchange.data.impl.StaticDataDAOImpl;
 import com.challenge.exchange.data.impl.StockTradeDAOImpl;
+import com.challenge.exchange.model.Stock;
+import com.challenge.exchange.model.StockType;
 import com.challenge.exchange.model.Trade;
 import com.challenge.exchange.model.TradeType;
 import com.challenge.exchange.service.StockStaticDataService;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
+
 
 public class StockTradeServiceImplTest {
 
     @Test
-    void testSaveTrade() {
+    public void testSaveTrade() {
 
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
+        Stock s1 = new Stock();
+        s1.setSymbol("TEA");
+        s1.setType(StockType.COMMON_STOCK);
+        s1.setLastDividend(BigDecimal.ZERO);
+        s1.setParValue(BigDecimal.valueOf(100));
+
+        s1 = dataService.addStockStaticData(s1);
+
+
 
         StockTradeDAO dao = new StockTradeDAOImpl();
         StockTradeServiceImpl tradeService = new StockTradeServiceImpl(dao, dataService);
@@ -34,6 +47,7 @@ public class StockTradeServiceImplTest {
         t1.setType(TradeType.BUY);
 
 
+
         t1 = tradeService.recordTrade(t1);
 
         Set<Trade> trades = dao.getTrades("TEA");
@@ -44,11 +58,18 @@ public class StockTradeServiceImplTest {
 
     }
 
-    @Test
-    void testValidateMandatoryDetailsOfTrade() {
+    @Test(expected = RuntimeException.class)
+    public void testValidateMandatoryDetailsOfTrade() {
 
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
+        Stock s1 = new Stock();
+        s1.setSymbol("TEA");
+        s1.setType(StockType.COMMON_STOCK);
+        s1.setLastDividend(BigDecimal.ZERO);
+        s1.setParValue(BigDecimal.valueOf(100));
+
+        s1 = dataService.addStockStaticData(s1);
 
 
         StockTradeDAO dao = new StockTradeDAOImpl();
@@ -56,19 +77,22 @@ public class StockTradeServiceImplTest {
 
         Trade t1 = new Trade();
 
-        assertThrows(RuntimeException.class, ()-> tradeService.recordTrade(t1));
+        tradeService.recordTrade(t1);
+
 
         Trade t2 = new Trade();
         t2.setTimestamp(LocalDateTime.of(2019, 12, 2, 11, 20, 20));
         t2.setSymbol("TEA");
-        assertThrows(RuntimeException.class, ()-> tradeService.recordTrade(t2));
+        tradeService.recordTrade(t2);
+
 
 
         Trade t3 = new Trade();
         t3.setTimestamp(LocalDateTime.of(2019, 12, 2, 11, 20, 20));
         t3.setSymbol("TEA");
         t3.setPrice(new BigDecimal("10"));
-        assertThrows(RuntimeException.class, ()-> tradeService.recordTrade(t3));
+        tradeService.recordTrade(t3);
+
 
 
         Trade t4 = new Trade();
@@ -76,25 +100,26 @@ public class StockTradeServiceImplTest {
         t4.setSymbol("TEA");
         t4.setPrice(new BigDecimal("10"));
         t4.setQuantity(10);
-        assertThrows(RuntimeException.class, ()-> tradeService.recordTrade(t4));
+        tradeService.recordTrade(t4);
+
 
 
     }
 
-    @Test
-    void testSaveTradeNull() {
+    @Test(expected = RuntimeException.class)
+    public void testSaveTradeNull() {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
 
         StockTradeDAO dao = new StockTradeDAOImpl();
         StockTradeServiceImpl tradeService = new StockTradeServiceImpl(dao, dataService);
-        assertThrows(RuntimeException.class, () -> tradeService.recordTrade(null));
+        tradeService.recordTrade(null);
 
     }
 
 
     @Test
-    void testGetTradesEmpty() {
+    public void testGetTradesEmpty() {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
 
@@ -105,9 +130,17 @@ public class StockTradeServiceImplTest {
     }
 
     @Test
-    void testGetLatestTradePrice() {
+    public void testGetLatestTradePrice() {
         StaticDataDAO stockDAO = new StaticDataDAOImpl();
         StockStaticDataService dataService = new StockStaticDataServiceImpl(stockDAO);
+        Stock s1 = new Stock();
+        s1.setSymbol("TEA");
+        s1.setType(StockType.COMMON_STOCK);
+        s1.setLastDividend(BigDecimal.ZERO);
+        s1.setParValue(BigDecimal.valueOf(100));
+
+        s1 = dataService.addStockStaticData(s1);
+
 
         StockTradeDAO dao = new StockTradeDAOImpl();
         StockTradeServiceImpl tradeService = new StockTradeServiceImpl(dao, dataService);
@@ -137,4 +170,10 @@ public class StockTradeServiceImplTest {
 
     }
 
+    @After
+    public void clearStockRepo(){
+        StaticDataDAO dao = new StaticDataDAOImpl();
+        StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
+        dataService.clearAllStockStaticData();
+    }
 }

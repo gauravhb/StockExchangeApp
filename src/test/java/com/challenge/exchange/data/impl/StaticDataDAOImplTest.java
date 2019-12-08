@@ -1,19 +1,22 @@
 package com.challenge.exchange.data.impl;
 
+import com.challenge.exchange.data.StaticDataDAO;
 import com.challenge.exchange.model.Stock;
 import com.challenge.exchange.model.StockType;
-import org.junit.jupiter.api.Test;
+import com.challenge.exchange.service.impl.StockStaticDataServiceImpl;
+import org.junit.After;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 
 public class StaticDataDAOImplTest {
 
     @Test
-    void testAddStock() {
+    public void testAddStock() {
 
         StaticDataDAOImpl dao = new StaticDataDAOImpl();
 
@@ -31,25 +34,33 @@ public class StaticDataDAOImplTest {
 
     }
 
-    @Test
-    void testAddStockNull() {
+    @Test(expected = NullPointerException.class)
+    public void testAddStockNull() {
 
         StaticDataDAOImpl dao = new StaticDataDAOImpl();
-        assertThrows(NullPointerException.class, ()-> dao.addStockStaticData(null));
+        dao.addStockStaticData(null);
     }
 
-    @Test
-    void testAddStockSymbolNull() {
+    @Test(expected = NullPointerException.class)
+    public void testAddStockSymbolNull() {
 
         StaticDataDAOImpl dao = new StaticDataDAOImpl();
         Stock s = new Stock();
-        assertThrows(NullPointerException.class, ()-> dao.addStockStaticData(s));
+        dao.addStockStaticData(s);
     }
 
     @Test
-    void testGetAllExchangeListedStocks() {
+    public void testGetAllExchangeListedStocks() {
 
         StaticDataDAOImpl dao = new StaticDataDAOImpl();
         assertEquals(0,  dao.getAllExchangeListedStocks().size());
     }
+
+    @After
+    public void clearStockRepo(){
+        StaticDataDAO dao = new StaticDataDAOImpl();
+        StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
+        dataService.clearAllStockStaticData();
+    }
+
 }

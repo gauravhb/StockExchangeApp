@@ -2,7 +2,6 @@ package com.challenge.exchange.service;
 
 import com.challenge.exchange.model.Stock;
 
-import java.util.List;
 import java.util.Map;
 
 public interface StockStaticDataService {
@@ -14,6 +13,8 @@ public interface StockStaticDataService {
     Stock removeStockStaticData(String symbol);
 
     Stock findStock(String symbol);
+
+    void clearAllStockStaticData();
 
 
 }

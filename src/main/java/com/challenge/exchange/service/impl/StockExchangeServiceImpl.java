@@ -12,7 +12,6 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,8 +28,12 @@ public class StockExchangeServiceImpl implements StockExchangeService {
 
     @Override
     public BigDecimal getDividendYield(String symbol, BigDecimal price) {
-        Objects.requireNonNull(symbol, "Stock symbol cannot be null");
-        Objects.requireNonNull(price, "Price cannot be null");
+        if(symbol == null){
+            throw new IllegalArgumentException("Stock symbol cannot be null");
+        }
+        if(price == null){
+            throw new IllegalArgumentException("Price cannot be null");
+        }
         if(price.compareTo(BigDecimal.ZERO) < 1){
             throw new IllegalArgumentException("Price should greater than zero");
         }
@@ -54,9 +57,12 @@ public class StockExchangeServiceImpl implements StockExchangeService {
 
     @Override
     public Optional<BigDecimal> getPERatio(String symbol, BigDecimal price) {
-        Objects.requireNonNull(symbol, "Stock symbol cannot be null");
-        Objects.requireNonNull(price, "Price cannot be null");
-
+        if(symbol == null){
+            throw new IllegalArgumentException("Stock symbol cannot be null");
+        }
+        if(price == null){
+            throw new IllegalArgumentException("Price cannot be null");
+        }
         Optional<BigDecimal> pe = Optional.empty();
 
         Stock stock = stockDataService.findStock(symbol);
@@ -74,7 +80,9 @@ public class StockExchangeServiceImpl implements StockExchangeService {
     @Override
     public Optional<BigDecimal> getVolumeWeightedStockPrice(String symbol) {
         Optional<BigDecimal> price = Optional.empty();
-        Objects.requireNonNull(symbol, "Stock symbol cannot be null");
+        if(symbol == null){
+            throw new IllegalArgumentException("Stock symbol cannot be null");
+        }
 
         Set<Trade> trades = stockTradeService.getTrades(symbol);
 

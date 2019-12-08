@@ -38,5 +38,10 @@ public class StockStaticDataServiceImpl implements StockStaticDataService {
         return getAllExchangeListedStocks().get(symbol);
     }
 
+    @Override
+    public void clearAllStockStaticData() {
+        getAllExchangeListedStocks().clear();
+    }
+
 
 }

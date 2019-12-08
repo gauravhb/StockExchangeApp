@@ -1,18 +1,22 @@
 package com.challenge.exchange.data.impl;
 
+import com.challenge.exchange.data.StaticDataDAO;
 import com.challenge.exchange.model.Trade;
-import org.junit.jupiter.api.Test;
+import com.challenge.exchange.service.impl.StockStaticDataServiceImpl;
+import org.junit.After;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-class StockTradeDAOImplTest {
+
+public class StockTradeDAOImplTest {
 
     @Test
-    void testSaveTrade() {
+    public void testSaveTrade() {
 
         StockTradeDAOImpl dao = new StockTradeDAOImpl();
         Trade t1 = new Trade();
@@ -38,36 +42,37 @@ class StockTradeDAOImplTest {
 
     }
 
-    @Test
-    void testSaveTradeNull() {
+    @Test(expected = NullPointerException.class)
+    public void testSaveTradeNull() {
         StockTradeDAOImpl dao = new StockTradeDAOImpl();
-        assertThrows(NullPointerException.class, () -> dao.saveTrade(null));
+
+        dao.saveTrade(null);
 
     }
 
-    @Test
-    void testSaveTradeEmpty() {
+    @Test(expected = NullPointerException.class)
+    public void testSaveTradeEmpty() {
         StockTradeDAOImpl dao = new StockTradeDAOImpl();
-        assertThrows(NullPointerException.class, () -> dao.saveTrade(new Trade()));
+
+        dao.saveTrade(new Trade());
     }
 
-    @Test
-    void testSaveTradeTimepstampNull() {
+    @Test(expected = NullPointerException.class)
+    public void testSaveTradeTimepstampNull() {
         StockTradeDAOImpl dao = new StockTradeDAOImpl();
         Trade t3 = new Trade();
         t3.setSymbol("TEA");
-
-        assertThrows(NullPointerException.class, () -> dao.saveTrade(t3));
+        dao.saveTrade(t3);
     }
 
     @Test
-    void testGetTradesEmpty() {
+    public void testGetTradesEmpty() {
         StockTradeDAOImpl dao = new StockTradeDAOImpl();
         assertNull(dao.getTrades(""));
     }
 
     @Test
-    void testGetLatestTradePrice() {
+    public void testGetLatestTradePrice() {
 
         StockTradeDAOImpl dao = new StockTradeDAOImpl();
         Trade t1 = new Trade();
@@ -89,4 +94,12 @@ class StockTradeDAOImplTest {
         assertTrue(new BigDecimal("101.23").compareTo(latestPrice) == 0 );
 
     }
+
+    @After
+    public void clearStockRepo(){
+        StaticDataDAO dao = new StaticDataDAOImpl();
+        StockStaticDataServiceImpl dataService = new StockStaticDataServiceImpl(dao);
+        dataService.clearAllStockStaticData();
+    }
+
 }
