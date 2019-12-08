@@ -44,5 +44,5 @@ using corresponding method provided in interface :
 *com.challenge.exchange.service.StockExchangeService*
 
 
-Below example main class be executed to see all the features mentioned above :
+Below main class be executed to see all the features mentioned above :
 **com.challenge.exchange.SampleStockMarketApp**
